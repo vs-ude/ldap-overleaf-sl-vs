@@ -9,15 +9,15 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-      simple-certbot:
-        condition: service_started
+      # simple-certbot:
+      #   condition: service_started
     privileged: false
     ports:
       - 443:443
     links:
       - mongo
       - redis
-      - simple-certbot
+      # - simple-certbot
     volumes:
       - ${MYDATA}/sharelatex:/var/lib/sharelatex
       - ${MYDATA}/letsencrypt:/etc/letsencrypt
@@ -69,7 +69,7 @@ services:
       # LDAP_BIND_PW:
 
       # Only allow users matching LDAP_USER_FILTER
-      LDAP_USER_FILTER: "(memberof=cn=GROUPNAME,ou=groups,dc=DOMAIN,dc=TLD)"
+      LDAP_USER_FILTER: " (&(|(objectclass=inetorgperson))(|(memberof=cn=nextcloud,cn=groups,cn=accounts,dc=vs,dc=srv)))"
 
       # If user is in ADMIN_GROUP on user creation (first login) isAdmin is set to true.
       # Admin Users can invite external (non ldap) users. This feature makes only sense
@@ -79,8 +79,8 @@ services:
       ALLOW_EMAIL_LOGIN: "true"
 
       # All users in the LDAP_CONTACT_FILTER are loaded from the ldap server into contacts.
-      LDAP_CONTACT_FILTER: "(memberof=cn=GROUPNAME,ou=groups,dc=DOMAIN,dc=TLD)"
-      LDAP_CONTACTS: "false"
+      LDAP_CONTACT_FILTER: "(&(|(objectclass=inetorgperson))(|(memberof=cn=nextcloud,cn=groups,cn=accounts,dc=vs,dc=srv)))"
+      LDAP_CONTACTS: "true"
 
       ## OAuth2 Settings
       # OAUTH2_ENABLED: "true"
@@ -156,20 +156,20 @@ services:
       timeout: 5s
       retries: 5
 
-  simple-certbot:
-    restart: always
-    image: certbot/certbot
-    container_name: simple-certbot
-    ports:
-      - 80:80
-    volumes:
-      - ${MYDATA}/letsencrypt:/etc/letsencrypt
-    # a bit hacky but this docker image uses very little disk-space
-    # best practices for ssl and nginx are set in the ldap-overleaf-sl Dockerfile
-    entrypoint:
-      - "/bin/sh"
-      - -c
-      - |
-        trap exit TERM;\
-        certbot certonly --standalone -d ${MYDOMAIN} --agree-tos -m ${MYMAIL} -n ; \
-        while :; do certbot renew; sleep 240h & wait $${!}; done;
+  # simple-certbot:
+  #   restart: always
+  #   image: certbot/certbot
+  #   container_name: simple-certbot
+  #   ports:
+  #     - 80:80
+  #   volumes:
+  #     - ${MYDATA}/letsencrypt:/etc/letsencrypt
+  #   # a bit hacky but this docker image uses very little disk-space
+  #   # best practices for ssl and nginx are set in the ldap-overleaf-sl Dockerfile
+  #   entrypoint:
+  #     - "/bin/sh"
+  #     - -c
+  #     - |
+  #       trap exit TERM;\
+  #       certbot certonly --standalone -d ${MYDOMAIN} --agree-tos -m ${MYMAIL} -n ; \
+  #       while :; do certbot renew; sleep 240h & wait $${!}; done;
