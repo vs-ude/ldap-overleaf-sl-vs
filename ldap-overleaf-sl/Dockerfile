@@ -13,16 +13,16 @@ ARG admin_is_sysadmin
 # set workdir (might solve issue #2 - see https://stackoverflow.com/questions/57534295/)
 WORKDIR /overleaf/services/web
 
-    # install latest npm
-RUN npm install -g npm && \
-    ## clean cache (might solve issue #2)
-    # npm cache clean --force && \
-    npm install ldap-escape ldapts-search ldapts@3.2.4 && \
-    # npm install bcrypt@5.0.0 && \
-    apt-get update && \
+# Install latest Node.js (22.x) and npm (11.x)
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install -g npm@11.0.0 && \
+    npm install ldap-escape ldapts-search ldapts@3.2.4
+
+# Install additional packages
+RUN apt-get update && \
     apt-get -y install libxml-libxslt-perl cpanminus libbtparse2 python-pygments && \
-    # now install latest texlive2023 from tlmgr
-    tlmgr update --self --all  && \
+    tlmgr update --self --all && \
     tlmgr install scheme-full --verify-repo=none && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
