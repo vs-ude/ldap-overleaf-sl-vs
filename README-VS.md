@@ -1,0 +1,1 @@
+ldapsearch -H ldap://idm.vs.srv:389 -x -b "cn=users,cn=accounts,dc=vs,dc=srv" -D "uid=overleaf-reader,cn=users,cn=accounts,dc=vs,dc=srv" -w "PW" "(&(memberof=cn=wimi,cn=groups,cn=accounts,dc=vs,dc=srv))"

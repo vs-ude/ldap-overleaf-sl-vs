@@ -1,8 +1,9 @@
 version: "2.2"
 services:
+
   sharelatex:
     restart: always
-    image: ldap-overleaf-sl
+    image: ldap-overleaf-sl:v2
     container_name: ldap-overleaf-sl
     depends_on:
       mongo:
@@ -17,8 +18,6 @@ services:
       - redis
     volumes:
       - ${MYDATA}/sharelatex:/var/lib/sharelatex
-      - ${MYDATA}/letsencrypt:/etc/letsencrypt
-      - ${MYDATA}/letsencrypt/live/${MYDOMAIN}/:/etc/letsencrypt/certs/domain
     environment:
       SHARELATEX_APP_NAME: Overleaf
       SHARELATEX_MONGO_URL: mongodb://mongo/sharelatex
@@ -52,33 +51,33 @@ services:
       # SHARELATEX_SECURE_COOKIE: "true"
       # SHARELATEX_BEHIND_PROXY: "true"
 
-      LDAP_SERVER: ldaps://LDAPSERVER:636
-      LDAP_BASE: ou=people,dc=DOMAIN,dc=TLD
-      LDAP_SERVER_CACERT: /etc/ssl/certs/LDAPCERT
+      LDAP_SERVER: ldaps://idm.vs.srv:636
+      LDAP_BASE: cn=users,cn=accounts,dc=vs,dc=srv
+      #LDAP_SERVER_CACERT: /etc/ssl/certs/LDAPCERT
 
       ### There are to ways get users from the ldap server
 
       ## NO LDAP BIND USER:
       # Tries directly to bind with the login user (as uid)
-      # LDAP_BINDDN: uid=%u,ou=someunit,ou=people,dc=DOMAIN,dc=TLD
+      LDAP_BINDDN: uid=%u,cn=users,cn=accounts,dc=vs,dc=srv
 
       ## Or you can use ai global LDAP_BIND_USER
-      # LDAP_BIND_USER:
-      # LDAP_BIND_PW:
+      #LDAP_BIND_USER: "uid=overleaf-reader,cn=users,cn=accounts,dc=vs,dc=srv"
+      #LDAP_BIND_PW: ""
 
       # Only allow users matching LDAP_USER_FILTER
-      LDAP_USER_FILTER: "(memberof=cn=GROUPNAME,ou=groups,dc=DOMAIN,dc=TLD)"
+      LDAP_USER_FILTER: "(&(memberOf=cn=allemi,cn=groups,cn=accounts,dc=vs,dc=srv)(uid=%u))"
 
       # If user is in ADMIN_GROUP on user creation (first login) isAdmin is set to true.
       # Admin Users can invite external (non ldap) users. This feature makes only sense
       # when ALLOW_EMAIL_LOGIN is set to 'true'. Additionally admins can send
       # system wide messages.
-      LDAP_ADMIN_GROUP_FILTER: "(memberof=cn=ADMINGROUPNAME,ou=groups,dc=DOMAIN,dc=TLD)"
+      LDAP_ADMIN_GROUP_FILTER: "(&(memberof=cn=wimi,cn=groups,cn=accounts,dc=vs,dc=srv)(uid=%u))"
       ALLOW_EMAIL_LOGIN: "true"
 
       # All users in the LDAP_CONTACT_FILTER are loaded from the ldap server into contacts.
-      LDAP_CONTACT_FILTER: "(memberof=cn=GROUPNAME,ou=groups,dc=DOMAIN,dc=TLD)"
-      LDAP_CONTACTS: "false"
+      LDAP_CONTACT_FILTER: "(&(memberof=cn=allemi,cn=groups,cn=accounts,dc=vs,dc=srv))"
+      LDAP_CONTACTS: "true"
 
       ## OAuth2 Settings
       # OAUTH2_ENABLED: "true"

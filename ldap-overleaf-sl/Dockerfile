@@ -5,13 +5,13 @@ LABEL maintainer="Simon Haller-Seeber"
 LABEL version="0.2"
 
 # Set working directory
-WORKDIR /overleaf/servi ces/web
+WORKDIR /overleaf/services/web
 
-# Install Node.js (22.x) and npm (11.x)
-RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
     apt-get install -y nodejs && \
-    npm install -g npm@11.0.0 && \
-    npm install ldap-escape ldapts-search ldapts@3.2.4
+    npm install -g npm@8.19.3 && \
+    npm install ldapts@3.2.4
+
 
 # Install additional packages
 RUN apt-get update && \

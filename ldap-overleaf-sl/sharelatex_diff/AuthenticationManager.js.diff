@@ -157,7 +157,7 @@
 >           },
 >         })
 >       : new Client({
->           url: process.env.LDAP_SERVER,
+>           url: process.env.LDAP_SERVER, tlsOptions: { rejectUnauthorized: false }
 >         })
 > 
 >     const ldap_reader = process.env.LDAP_BIND_USER
@@ -165,7 +165,7 @@
 >     const ldap_base = process.env.LDAP_BASE
 > 
 >     var mail = query.email
->     var uid = query.email.split("@")[0]
+>     var uid = query.email.split("@")[0]; try{ uid = uid.split(".")[1] }catch(error){ uid = uid.split(".")[0] }
 >     var firstname = ""
 >     var lastname = ""
 >     var isAdmin = false
